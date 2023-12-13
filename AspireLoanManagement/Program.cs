@@ -2,6 +2,8 @@ using AspireLoanManagement.Utility.Config;
 using AspireLoanManagement.Utility.Mapper;
 using AspireLoanManagement.Business;
 using AspireLoanManagement.Repository;
+using AspireLoanManagement.Utility.Cache;
+using AspireLoanManagement.Utility.Logger;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,6 +22,8 @@ builder.Services.AddAutoMapper(cfg =>
 });
 builder.Services.AddScoped<ILoanService, LoanService>();
 builder.Services.AddScoped<ILoanRepository, LoanRepository>();
+builder.Services.AddSingleton<IAspireCacheService, AspireCacheManager>();
+builder.Services.AddSingleton<IAspireLogger, AspireLoggerManager>();
 
 var app = builder.Build();
 

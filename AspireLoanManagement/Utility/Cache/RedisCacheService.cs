@@ -3,7 +3,7 @@ using System.Text.Json;
 
 namespace AspireLoanManagement.Utility.Cache
 {
-    public class RedisCacheService : ICacheService
+    public class RedisCacheService : IAspireCacheService
     {
         private readonly ConnectionMultiplexer _redisConnection;
 

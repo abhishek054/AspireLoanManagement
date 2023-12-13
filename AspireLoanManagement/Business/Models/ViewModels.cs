@@ -10,4 +10,10 @@ namespace AspireLoanManagement.Business.Models
         public int Term { get; set; }
         public LoanStatus Status { get; set; }
     }
+
+    public class RepaymentModelVM
+    {
+        public int Id { get; set; }
+        public decimal RepaymentAmount { get; set; }
+    }
 }

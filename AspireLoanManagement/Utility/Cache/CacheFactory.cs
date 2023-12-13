@@ -2,11 +2,11 @@
 {
     public static class CacheFactory
     {
-        public static ICacheService CreateCache(string cacheType, string connectionString = null)
+        public static IAspireCacheService CreateCache(string cacheType, string connectionString = null)
         {
             switch (cacheType.ToLower())
             {
-                case "inmemory":
+                case "in-memory":
                     return new InMemoryCacheService();
                 case "redis":
                     if (string.IsNullOrEmpty(connectionString))

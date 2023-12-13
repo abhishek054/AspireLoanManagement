@@ -2,7 +2,7 @@
 
 namespace AspireLoanManagement.Utility.Cache
 {
-    public class InMemoryCacheService : ICacheService
+    public class InMemoryCacheService : IAspireCacheService
     {
         private readonly MemoryCache _cache = new MemoryCache(new MemoryCacheOptions());
 

@@ -6,4 +6,10 @@
         Approved,
         Paid
     }
+
+    public enum RepaymentStatus
+    {
+        Pending,
+        Paid
+    }
 }

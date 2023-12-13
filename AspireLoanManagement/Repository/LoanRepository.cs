@@ -14,7 +14,7 @@ namespace AspireLoanManagement.Repository
         {
             var loanDetails = new LoanModelDTO()
             {
-                Amount = 52,
+                LoanAmount = 52,
                 Id = loanId,
                 RequestDate = DateTime.Now,
                 Status = Utility.CommonEntities.LoanStatus.Pending,

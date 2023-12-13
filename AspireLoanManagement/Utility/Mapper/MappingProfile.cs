@@ -8,9 +8,9 @@ namespace AspireLoanManagement.Utility.Mapper
     {
         public MappingProfile()
         {
-            // Source => Destination
+            // <Source, Destination>
             CreateMap<LoanModelDTO, LoanModelVM>()
-                .ForMember(dest => dest.Term, source => source.MapFrom(src => src.Term))
+                .ForMember(dest => dest.Amount, source => source.MapFrom(src => src.LoanAmount))
                 .ReverseMap();
         }
     }
