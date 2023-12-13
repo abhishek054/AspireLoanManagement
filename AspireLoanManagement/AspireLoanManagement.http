@@ -1,0 +1,6 @@
+@AspireLoanManagement_HostAddress = http://localhost:5198
+
+GET {{AspireLoanManagement_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
