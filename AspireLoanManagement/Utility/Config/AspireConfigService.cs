@@ -10,14 +10,6 @@ namespace AspireLoanManagement.Utility.Config
             config = _config.Value;
         }
 
-        public string GetVersion()
-        {
-            return config.Version;
-        }
-        public string GetDB()
-        {
-            return config.Settings.Database;
-        }
         public string GetCacheType()
         {
             return config.PreferredCache;

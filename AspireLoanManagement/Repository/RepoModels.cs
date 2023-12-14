@@ -15,16 +15,18 @@ namespace AspireLoanManagement.Repository
         public DateTime RequestDate { get; set; }
         public DateTime? SettledDate { get; set; }
         public LoanStatus Status { get; set; }
-        public List<RepaymentModelDTO> Repayments { get; set; }
+        public ICollection<RepaymentModelDTO> Repayments { get; set; }
     }
 
     public class RepaymentModelDTO
     {
         public int Id { get; set; }
         public int UserId { get; set; }
+        public int LoanID { get; set; }
         public decimal RepaymentAmount { get; set; }
         public DateTime ExpectedRepaymentDate {  get; set; }
         public DateTime? ActualRepaymentDate { get; set; }
         public RepaymentStatus Status { get; set; }
+        public virtual LoanModelDTO LoanModelDTO { get; set; }
     }
 }

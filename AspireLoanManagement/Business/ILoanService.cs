@@ -6,8 +6,8 @@ namespace AspireLoanManagement.Business
     public interface ILoanService
     {
         Task<LoanModelVM> GetLoanByIdAsync(int loanId);
-        Task<IEnumerable<LoanModelVM>> GetLoansByCustomerIdAsync(int customerId);
-        Task AddLoanAsync(LoanModelVM loan);
-        Task UpdateLoanAsync(LoanModelVM loan);
+        Task<LoanModelVM> AddLoanAsync(LoanModelVM loan);
+        Task SettleRepayment(RepaymentModelVM repayment);
+        Task ApproveLoan(int loanId);
     }
 }

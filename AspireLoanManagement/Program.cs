@@ -4,6 +4,7 @@ using AspireLoanManagement.Business;
 using AspireLoanManagement.Repository;
 using AspireLoanManagement.Utility.Cache;
 using AspireLoanManagement.Utility.Logger;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,6 +25,8 @@ builder.Services.AddScoped<ILoanService, LoanService>();
 builder.Services.AddScoped<ILoanRepository, LoanRepository>();
 builder.Services.AddSingleton<IAspireCacheService, AspireCacheManager>();
 builder.Services.AddSingleton<IAspireLogger, AspireLoggerManager>();
+builder.Services.AddDbContext<LoanDbContext>(options =>
+        options.UseSqlServer(builder.Configuration.GetConnectionString("AspireDBConnectionString")));
 
 var app = builder.Build();
 

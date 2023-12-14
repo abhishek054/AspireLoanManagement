@@ -1,37 +1,98 @@
 ﻿
+using AspireLoanManagement.Business.Models;
+using AutoMapper;
+using Microsoft.EntityFrameworkCore;
+
 namespace AspireLoanManagement.Repository
 {
     public class LoanRepository : ILoanRepository
     {
-        public LoanRepository() { }
+        private readonly LoanDbContext _context;
+        private readonly IMapper _mapper;
 
-        public Task AddLoanAsync(LoanModelDTO loan)
+        public LoanRepository(LoanDbContext context, IMapper mapper)
         {
-            throw new NotImplementedException();
+            _context = context;
+            _mapper = mapper;
         }
 
-        public Task<LoanModelDTO> GetLoanByIdAsync(int loanId)
+        public async Task<int> AddLoanAsync(LoanModelVM loan)
         {
-            var loanDetails = new LoanModelDTO()
+            var loanDto = _mapper.Map<LoanModelDTO>(loan);
+            loanDto.RequestDate = DateTime.Now;
+            loanDto.Status = Utility.CommonEntities.LoanStatus.Pending;
+            _context.Loans.Add(loanDto);
+            return await _context.SaveChangesAsync();
+        }
+
+        public async Task AddMultipleRepaymentAsync(List<RepaymentModelVM> repayments)
+        {
+            var repaymentDto = _mapper.Map<List<RepaymentModelDTO>>(repayments);
+            _context.Repayments.AddRange(repaymentDto);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task ApproveLoan(int loanID)
+        {
+            var loan = await _context.Loans.FindAsync(loanID);
+            if (loan == null)
             {
-                LoanAmount = 52,
-                Id = loanId,
-                RequestDate = DateTime.Now,
-                Status = Utility.CommonEntities.LoanStatus.Pending,
-                Term = 2
-            };
+                throw new InvalidDataException("No loan exists for mentioned loanID");
+            }
 
-            return Task.FromResult(loanDetails);
+            loan.Status = Utility.CommonEntities.LoanStatus.Approved;
+
+            _context.Loans.Update(loan);
+            await _context.SaveChangesAsync();
         }
 
-        public Task<IEnumerable<LoanModelDTO>> GetLoansByCustomerIdAsync(int customerId)
+        public async Task<LoanModelDTO> GetLoanByIdAsync(int loanId)
         {
-            throw new NotImplementedException();
+            var loanDto = await _context.Loans.FirstOrDefaultAsync(x => x.Id == loanId);
+            if (loanDto == null)
+            {
+                throw new InvalidDataException($"No oan available with ID: {loanId}");
+            }
+            loanDto.Repayments = await _context.Repayments.Where(x => x.LoanID ==  loanId).ToListAsync();
+            return loanDto;
         }
 
-        public Task UpdateLoanAsync(LoanModelDTO loan)
+        public async Task SettleRepayment(int repaymentId)
         {
-            throw new NotImplementedException();
+            var rep = await _context.Repayments.FirstOrDefaultAsync(x => x.Id == repaymentId);
+            if(rep == null)
+            {
+                throw new Exception($"No repayment available for repaymentID: {repaymentId}");
+            }
+            rep.ActualRepaymentDate = DateTime.UtcNow;
+            rep.Status = Utility.CommonEntities.RepaymentStatus.Paid;
+            _context.Repayments.Update(rep);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task UpdateRepaymentAmount(RepaymentModelDTO repayment)
+        {
+            var rep = await _context.Repayments.FirstOrDefaultAsync(x => x.Id == repayment.Id);
+            if (rep == null)
+            {
+                throw new Exception($"No repayment available for repaymentID: {repayment.Id}");
+            }
+            rep.RepaymentAmount = repayment.RepaymentAmount;
+            _context.Repayments.Update(rep);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task SettleLoan(int loanID)
+        {
+            var loan = await _context.Loans.FirstOrDefaultAsync(x => x.Id == loanID && x.Status != Utility.CommonEntities.LoanStatus.Paid);
+            if(loan == null)
+            {
+                throw new Exception($"No active loan found with id: {loanID}");
+            }
+            loan.Status = Utility.CommonEntities.LoanStatus.Paid;
+            loan.SettledDate = DateTime.UtcNow;
+            _context.Loans.Update(loan);
+            await _context.SaveChangesAsync();
         }
     }
 }

@@ -4,12 +4,14 @@
     {
         Pending,
         Approved,
-        Paid
+        Paid,
+        Rejected
     }
 
     public enum RepaymentStatus
     {
         Pending,
-        Paid
+        Paid,
+        Late
     }
 }
