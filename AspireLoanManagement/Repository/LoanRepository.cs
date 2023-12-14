@@ -16,13 +16,14 @@ namespace AspireLoanManagement.Repository
             _mapper = mapper;
         }
 
-        public async Task<int> AddLoanAsync(LoanModelVM loan)
+        public async Task<LoanModelDTO> AddLoanAsync(LoanModelVM loan)
         {
             var loanDto = _mapper.Map<LoanModelDTO>(loan);
             loanDto.RequestDate = DateTime.Now;
             loanDto.Status = Utility.CommonEntities.LoanStatus.Pending;
             _context.Loans.Add(loanDto);
-            return await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync();
+            return loanDto;
         }
 
         public async Task AddMultipleRepaymentAsync(List<RepaymentModelVM> repayments)

@@ -24,25 +24,27 @@ namespace AspireLoanManagement.Business
         {
             _logger.Log(LogLevel.Info, $"User: {loan.UserId} applied for a loan of amount: {loan.Amount}, term: {loan.Term}");
             
-            var loanID = await _loanRepository.AddLoanAsync(loan);
+            var loanDto = await _loanRepository.AddLoanAsync(loan);
 
-            _logger.Log(LogLevel.Info, $"Loan created with loanID: {loanID}");
+            _logger.Log(LogLevel.Info, $"Loan created with loanID: {loanDto.Id}");
 
-            var loanVM = _mapper.Map<LoanModelVM>(await _loanRepository.GetLoanByIdAsync(loanID));
+            var loanVM = _mapper.Map<LoanModelVM>(loanDto);
 
             List<RepaymentModelVM> repaymentModels = new List<RepaymentModelVM>() { };
-            for(int i=1; i<=loan.Term; i++)
+            for(int i=1; i<= loan.Term; i++)
             {
                 repaymentModels.Add(new RepaymentModelVM()
                 {
                     RepaymentAmount = loan.Amount / loan.Term,
                     UserId = loan.UserId,
-                    LoanID = loanID,
+                    LoanID = loanDto.Id,
                     ExpectedRepaymentDate = DateTime.UtcNow.AddDays(7 * i)
                 });
             }
 
             await _loanRepository.AddMultipleRepaymentAsync(repaymentModels);
+
+            loanVM.Repayments = repaymentModels;
 
             return loanVM;
         }
