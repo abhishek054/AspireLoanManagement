@@ -1,5 +1,6 @@
 ﻿using AspireLoanManagement.Business.Models;
 using AspireLoanManagement.Repository;
+using AspireLoanManagement.Utility.CommonEntities;
 
 namespace AspireLoanManagement.Business
 {
@@ -7,7 +8,7 @@ namespace AspireLoanManagement.Business
     {
         Task<LoanModelVM> GetLoanByIdAsync(int loanId);
         Task<LoanModelVM> AddLoanAsync(LoanModelVM loan);
-        Task SettleRepayment(RepaymentModelVM repayment);
-        Task ApproveLoan(int loanId);
+        Task<bool> SettleRepayment(RepaymentModelVM repayment);
+        Task<LoanStatus> ApproveLoan(int loanId);
     }
 }

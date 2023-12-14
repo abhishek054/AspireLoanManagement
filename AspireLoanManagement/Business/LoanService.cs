@@ -1,6 +1,7 @@
 ﻿using AspireLoanManagement.Business.Models;
 using AspireLoanManagement.Repository;
 using AspireLoanManagement.Utility.Cache;
+using AspireLoanManagement.Utility.CommonEntities;
 using AspireLoanManagement.Utility.Logger;
 using AutoMapper;
 
@@ -49,9 +50,9 @@ namespace AspireLoanManagement.Business
             return loanVM;
         }
 
-        public async Task ApproveLoan(int loanId)
+        public async Task<LoanStatus> ApproveLoan(int loanId)
         {
-            await _loanRepository.ApproveLoan(loanId);
+            return await _loanRepository.ApproveLoan(loanId);
         }
 
         public async Task<LoanModelVM> GetLoanByIdAsync(int loanId)
@@ -71,10 +72,22 @@ namespace AspireLoanManagement.Business
 
         }
 
-        public async Task SettleRepayment(RepaymentModelVM repayment)
+        public async Task<bool> SettleRepayment(RepaymentModelVM repayment)
         {
             // Get the loan details from DB
             var loan = await _loanRepository.GetLoanByIdAsync(repayment.LoanID);
+
+            if(loan.UserId != repayment.UserId)
+            {
+                throw new Exception("Invalid settlement");
+            }
+
+            if(loan.Status != LoanStatus.Approved)
+            {
+                _logger.Log(LogLevel.Info, $"Loan is not yet approved for loan: {repayment.LoanID}");
+                return false;
+            }
+
             var activeRepayments = loan.Repayments.Where(x => x.Status != Utility.CommonEntities.RepaymentStatus.Paid).ToList();
             if (activeRepayments == null || activeRepayments.Count == 0)
             {
@@ -82,14 +95,15 @@ namespace AspireLoanManagement.Business
             }
             
             var latestActiveRepayment = activeRepayments.OrderBy(x => x.ExpectedRepaymentDate).First();
-            var pendingLoanAmount = activeRepayments.Sum(x => x.RepaymentAmount);
+            var repaymentAmount = latestActiveRepayment.PendingAmount;
+            var pendingLoanAmount = activeRepayments.Sum(x => x.PendingAmount);
             if(repayment.RepaymentAmount > pendingLoanAmount)
             {
                 // User trying to pay more than overall pending loan amount
                 throw new Exception("Cannot pay more than pending loan amount");
             }
 
-            if (repayment.RepaymentAmount < latestActiveRepayment.RepaymentAmount)
+            if (repayment.RepaymentAmount < latestActiveRepayment.PendingAmount)
             {
                 // User trying to pay an amount less than the repayment installment
                 throw new Exception("Proposed payment amount is lesser than expected amount");
@@ -98,27 +112,29 @@ namespace AspireLoanManagement.Business
             // Repayment of the earliest installment
             await _loanRepository.SettleRepayment(latestActiveRepayment.Id);
 
-            // If the settled repayment was the last active repayment of the loan, settle the Loan
+            // If the settled repayment was the last active repayment of the loan, settle the Loan and exit
             if(activeRepayments.Count == 1)
             {
                 await _loanRepository.SettleLoan(loan.Id);
+                return true;
             }
 
             // Update the next Repayments if necessary
-            if(repayment.RepaymentAmount > latestActiveRepayment.RepaymentAmount)
+            if(repayment.RepaymentAmount > repaymentAmount)
             {
                 // Tracking other active repayments in order of expected payment date
                 activeRepayments = activeRepayments.Where(x => x.Id != latestActiveRepayment.Id).OrderBy(x => x.ExpectedRepaymentDate).ToList();
-                decimal extraAmount = repayment.RepaymentAmount - latestActiveRepayment.RepaymentAmount;
+                decimal extraAmount = repayment.RepaymentAmount - repaymentAmount;
                 int repaymentIndex = 0; // To track other active repayments from earliest to latest based on index
 
                 while(extraAmount > 0 && repaymentIndex < activeRepayments.Count)
                 {
                     var nextRepayment = activeRepayments[repaymentIndex++];
-                    if (extraAmount < nextRepayment.RepaymentAmount)
+                    if (extraAmount < nextRepayment.PendingAmount)
                     {
                         // Reduce the amount for repayment. No extra pending amount to be deducted from other reinstallments
-                        nextRepayment.RepaymentAmount = nextRepayment.RepaymentAmount - extraAmount;
+                        nextRepayment.PendingAmount = nextRepayment.PendingAmount - extraAmount;
+                        nextRepayment.PaidAmount = extraAmount;
                         await _loanRepository.UpdateRepaymentAmount(nextRepayment);
                         extraAmount = 0;
                     }
@@ -126,8 +142,8 @@ namespace AspireLoanManagement.Business
                     {
                         // Settle the next repayment and reduce extra amount for subsequent repayments
                         await _loanRepository.SettleRepayment(nextRepayment.Id);
-                        extraAmount = extraAmount - nextRepayment.RepaymentAmount;
-                        if(extraAmount == 0 && repaymentIndex == activeRepayments.Count - 1)
+                        extraAmount = extraAmount - nextRepayment.PaidAmount;
+                        if(extraAmount == 0 && repaymentIndex == activeRepayments.Count)
                         {
                             // In case all the repayments are settled, Settle the loan
                             await _loanRepository.SettleLoan(loan.Id);
@@ -135,6 +151,8 @@ namespace AspireLoanManagement.Business
                     }
                 }
             }
+
+            return true;
         }
     }
 }

@@ -13,7 +13,7 @@ namespace AspireLoanManagement.Utility.Mapper
                 .ForMember(dest => dest.Amount, source => source.MapFrom(src => src.LoanAmount))
                 .ReverseMap();
             CreateMap<RepaymentModelVM, RepaymentModelDTO>()
-                .ReverseMap();
+                .ForMember(dest => dest.PendingAmount, source => source.MapFrom(src => src.RepaymentAmount));
         }
     }
 }

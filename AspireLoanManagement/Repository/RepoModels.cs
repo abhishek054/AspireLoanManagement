@@ -23,7 +23,8 @@ namespace AspireLoanManagement.Repository
         public int Id { get; set; }
         public int UserId { get; set; }
         public int LoanID { get; set; }
-        public decimal RepaymentAmount { get; set; }
+        public decimal PendingAmount { get; set; }
+        public decimal PaidAmount { get; set; } = 0;
         public DateTime ExpectedRepaymentDate {  get; set; }
         public DateTime? ActualRepaymentDate { get; set; }
         public RepaymentStatus Status { get; set; }

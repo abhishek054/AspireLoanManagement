@@ -1,5 +1,6 @@
 ﻿
 using AspireLoanManagement.Business.Models;
+using AspireLoanManagement.Utility.CommonEntities;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 
@@ -20,7 +21,7 @@ namespace AspireLoanManagement.Repository
         {
             var loanDto = _mapper.Map<LoanModelDTO>(loan);
             loanDto.RequestDate = DateTime.Now;
-            loanDto.Status = Utility.CommonEntities.LoanStatus.Pending;
+            loanDto.Status = LoanStatus.Pending;
             _context.Loans.Add(loanDto);
             await _context.SaveChangesAsync();
             return loanDto;
@@ -33,7 +34,7 @@ namespace AspireLoanManagement.Repository
             await _context.SaveChangesAsync();
         }
 
-        public async Task ApproveLoan(int loanID)
+        public async Task<LoanStatus> ApproveLoan(int loanID)
         {
             var loan = await _context.Loans.FindAsync(loanID);
             if (loan == null)
@@ -41,10 +42,11 @@ namespace AspireLoanManagement.Repository
                 throw new InvalidDataException("No loan exists for mentioned loanID");
             }
 
-            loan.Status = Utility.CommonEntities.LoanStatus.Approved;
+            loan.Status = LoanStatus.Approved;
 
             _context.Loans.Update(loan);
             await _context.SaveChangesAsync();
+            return loan.Status;
         }
 
         public async Task<LoanModelDTO> GetLoanByIdAsync(int loanId)
@@ -66,7 +68,9 @@ namespace AspireLoanManagement.Repository
                 throw new Exception($"No repayment available for repaymentID: {repaymentId}");
             }
             rep.ActualRepaymentDate = DateTime.UtcNow;
-            rep.Status = Utility.CommonEntities.RepaymentStatus.Paid;
+            rep.Status = RepaymentStatus.Paid;
+            rep.PaidAmount += rep.PendingAmount;
+            rep.PendingAmount = 0;
             _context.Repayments.Update(rep);
             await _context.SaveChangesAsync();
         }
@@ -78,7 +82,7 @@ namespace AspireLoanManagement.Repository
             {
                 throw new Exception($"No repayment available for repaymentID: {repayment.Id}");
             }
-            rep.RepaymentAmount = repayment.RepaymentAmount;
+            rep.PendingAmount = repayment.PendingAmount;
             _context.Repayments.Update(rep);
             await _context.SaveChangesAsync();
         }
