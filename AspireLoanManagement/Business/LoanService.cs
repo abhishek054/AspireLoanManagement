@@ -52,6 +52,7 @@ namespace AspireLoanManagement.Business
 
         public async Task<LoanStatus> ApproveLoan(int loanId)
         {
+            _logger.Log(LogLevel.Info, $"Approving loan for loanId: {loanId}");
             return await _loanRepository.ApproveLoan(loanId);
         }
 

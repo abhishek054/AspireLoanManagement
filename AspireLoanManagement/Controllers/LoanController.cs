@@ -3,6 +3,7 @@ using AspireLoanManagement.Business.Models;
 using AspireLoanManagement.Utility.CommonEntities;
 using AspireLoanManagement.Utility.Validators;
 using FluentValidation;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AspireLoanManagement.Controllers
@@ -10,13 +11,9 @@ namespace AspireLoanManagement.Controllers
     public class LoanController : ControllerBase
     {
         private readonly ILoanService _loanService;
-        private readonly IValidator<LoanModelVM> _loanValidator;
-        private readonly IValidator<RepaymentModelVM> _repaymentValidator;
-        public LoanController(ILoanService service, IValidator<LoanModelVM> loanValidator, IValidator<RepaymentModelVM> repaymentValidator)
+        public LoanController(ILoanService service)
         {
             _loanService = service;
-            _loanValidator = loanValidator;
-            _repaymentValidator = repaymentValidator;
         }
 
         [HttpGet]
@@ -35,7 +32,12 @@ namespace AspireLoanManagement.Controllers
         [Route("api/Loan/CreateLoan")]
         public async Task<LoanModelVM> CreateLoan([FromBody] LoanModelVM loan)
         {
-            await _loanValidator.ValidateAndThrowAsync(loan);
+            var validator = new CreateLoanPayloadValidator();
+            var valid = await validator.ValidateAsync(loan);
+            if(!valid.IsValid)
+            {
+                throw new Exception("Error Occured");
+            }
 
             return await _loanService.AddLoanAsync(loan);
         }
@@ -44,15 +46,25 @@ namespace AspireLoanManagement.Controllers
         [Route("api/Loan/SettleRepayment")]
         public async Task<bool> SettleRepayment([FromBody] RepaymentModelVM repayment)
         {
-            await _repaymentValidator.ValidateAndThrowAsync(repayment);
+            var validator = new RepaymentModelValidator();
+            var valid = await validator.ValidateAsync(repayment);
+            if (!valid.IsValid)
+            {
+                throw new Exception("Error Occured");
+            }
 
             return await _loanService.SettleRepayment(repayment);
         }
 
+        [Authorize(Roles = "LoanManager")]
         [HttpPut]
         [Route("api/Loan/ApproveLoan/{Id}")]
         public async Task<LoanStatus> ApproveLoan(int Id)
         {
+            if(!ModelState.IsValid)
+            {
+                throw new Exception("Unauthorized user");
+            }
             return await _loanService.ApproveLoan(Id);
         }
 

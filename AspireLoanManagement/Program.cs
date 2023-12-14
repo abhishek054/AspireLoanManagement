@@ -33,6 +33,15 @@ builder.Services.AddScoped<IValidator<RepaymentModelVM>, RepaymentModelValidator
 builder.Services.AddDbContext<LoanDbContext>(options =>
         options.UseSqlServer(builder.Configuration.GetConnectionString("AspireDBConnectionString")));
 
+// Setting up Policy for Admin users
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("LoanManager", policy =>
+    {
+        policy.RequireRole("LoanManager");
+    });
+});
+
 var app = builder.Build();
 
 

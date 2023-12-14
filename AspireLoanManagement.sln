@@ -5,6 +5,8 @@ VisualStudioVersion = 17.8.34330.188
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AspireLoanManagement", "AspireLoanManagement\AspireLoanManagement.csproj", "{0F343693-32B6-45F7-AB4B-501DE2EE6018}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AspireLoanManagementTest", "AspireLoanManagementTest\AspireLoanManagementTest.csproj", "{50C1D378-C522-40FA-A032-252289D394DA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{0F343693-32B6-45F7-AB4B-501DE2EE6018}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0F343693-32B6-45F7-AB4B-501DE2EE6018}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0F343693-32B6-45F7-AB4B-501DE2EE6018}.Release|Any CPU.Build.0 = Release|Any CPU
+		{50C1D378-C522-40FA-A032-252289D394DA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{50C1D378-C522-40FA-A032-252289D394DA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{50C1D378-C522-40FA-A032-252289D394DA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{50C1D378-C522-40FA-A032-252289D394DA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
