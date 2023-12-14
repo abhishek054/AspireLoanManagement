@@ -7,9 +7,9 @@ namespace AspireLoanManagement.Utility.Validators
     {
         public CreateLoanPayloadValidator()
         {
-            RuleFor(x => x.Amount > 0);
-            RuleFor(x => x.UserId > 0);
-            RuleFor(x => x.Term > 0);
+            RuleFor(x => x.Amount).GreaterThan(0);
+            RuleFor(x => x.UserId).GreaterThan(0);
+            RuleFor(x => x.Term).GreaterThan(0);
         }
     }
 

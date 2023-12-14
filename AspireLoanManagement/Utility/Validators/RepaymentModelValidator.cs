@@ -8,11 +8,11 @@ namespace AspireLoanManagement.Utility.Validators
         public RepaymentModelValidator()
         {
             RuleFor(x => x.RepaymentAmount).NotEmpty();
-            RuleFor(x => x.RepaymentAmount > 0);
+            RuleFor(x => x.RepaymentAmount).GreaterThan(0);
             RuleFor(x => x.LoanID).NotEmpty();
-            RuleFor(x => x.LoanID > 0);
+            RuleFor(x => x.LoanID).GreaterThan(0);
             RuleFor(x => x.UserId).NotEmpty();
-            RuleFor(x => x.UserId > 0);
+            RuleFor(x => x.UserId).GreaterThan(0);
         }
     }
 }

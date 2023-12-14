@@ -2,6 +2,7 @@
 using AspireLoanManagement.Business.Models;
 using AspireLoanManagement.Utility.CommonEntities;
 using AspireLoanManagement.Utility.Validators;
+using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AspireLoanManagement.Controllers
@@ -9,9 +10,13 @@ namespace AspireLoanManagement.Controllers
     public class LoanController : ControllerBase
     {
         private readonly ILoanService _loanService;
-        public LoanController(ILoanService service)
+        private readonly IValidator<LoanModelVM> _loanValidator;
+        private readonly IValidator<RepaymentModelVM> _repaymentValidator;
+        public LoanController(ILoanService service, IValidator<LoanModelVM> loanValidator, IValidator<RepaymentModelVM> repaymentValidator)
         {
             _loanService = service;
+            _loanValidator = loanValidator;
+            _repaymentValidator = repaymentValidator;
         }
 
         [HttpGet]
@@ -19,7 +24,7 @@ namespace AspireLoanManagement.Controllers
         public async Task<LoanModelVM> GetLoanByID(int Id)
         {
             var validator = new GetLoanPayloadValidator();
-            if(!validator.Validate(Id).IsValid)
+            if (!validator.Validate(Id).IsValid)
             {
                 throw new Exception("Invalid payload");
             }
@@ -28,25 +33,19 @@ namespace AspireLoanManagement.Controllers
 
         [HttpPost]
         [Route("api/Loan/CreateLoan")]
-        public async Task<LoanModelVM> CreateLoan([FromBody]LoanModelVM loan)
+        public async Task<LoanModelVM> CreateLoan([FromBody] LoanModelVM loan)
         {
-            var validator = new CreateLoanPayloadValidator();
-            if(!validator.Validate(loan).IsValid)
-            {
-                throw new Exception("Invalid payload");
-            }
+            await _loanValidator.ValidateAndThrowAsync(loan);
+
             return await _loanService.AddLoanAsync(loan);
         }
 
         [HttpPost]
         [Route("api/Loan/SettleRepayment")]
-        public async Task<bool> SettleRepayment([FromBody]RepaymentModelVM repayment)
+        public async Task<bool> SettleRepayment([FromBody] RepaymentModelVM repayment)
         {
-            var validator = new RepaymentModelValidator();
-            if (!validator.Validate(repayment).IsValid)
-            {
-                throw new Exception("Invalid payload");
-            }
+            await _repaymentValidator.ValidateAndThrowAsync(repayment);
+
             return await _loanService.SettleRepayment(repayment);
         }
 

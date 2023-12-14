@@ -5,6 +5,9 @@ using AspireLoanManagement.Repository;
 using AspireLoanManagement.Utility.Cache;
 using AspireLoanManagement.Utility.Logger;
 using Microsoft.EntityFrameworkCore;
+using FluentValidation;
+using AspireLoanManagement.Business.Models;
+using AspireLoanManagement.Utility.Validators;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,6 +28,8 @@ builder.Services.AddScoped<ILoanService, LoanService>();
 builder.Services.AddScoped<ILoanRepository, LoanRepository>();
 builder.Services.AddSingleton<IAspireCacheService, AspireCacheManager>();
 builder.Services.AddSingleton<IAspireLogger, AspireLoggerManager>();
+builder.Services.AddScoped<IValidator<LoanModelVM>, CreateLoanPayloadValidator>();
+builder.Services.AddScoped<IValidator<RepaymentModelVM>, RepaymentModelValidator>();
 builder.Services.AddDbContext<LoanDbContext>(options =>
         options.UseSqlServer(builder.Configuration.GetConnectionString("AspireDBConnectionString")));
 
