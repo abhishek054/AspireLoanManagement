@@ -1,4 +1,4 @@
-﻿using AspireLoanManagement.Business;
+﻿using AspireLoanManagement.Business.Loan;
 using AspireLoanManagement.Business.Models;
 using AspireLoanManagement.Repository;
 using AspireLoanManagement.Utility.Cache;

@@ -1,6 +1,5 @@
 using AspireLoanManagement.Utility.Config;
 using AspireLoanManagement.Utility.Mapper;
-using AspireLoanManagement.Business;
 using AspireLoanManagement.Repository;
 using AspireLoanManagement.Utility.Cache;
 using AspireLoanManagement.Utility.Logger;
@@ -8,13 +7,18 @@ using Microsoft.EntityFrameworkCore;
 using FluentValidation;
 using AspireLoanManagement.Business.Models;
 using AspireLoanManagement.Utility.Validators;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using AspireLoanManagement.Business.Loan;
+using AspireLoanManagement.Business.Authentication;
+using System.Security.Claims;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.Configure<AspireConfigModel>(builder.Configuration.GetSection("AspireConfig"));
@@ -30,16 +34,33 @@ builder.Services.AddSingleton<IAspireCacheService, AspireCacheManager>();
 builder.Services.AddSingleton<IAspireLogger, AspireLoggerManager>();
 builder.Services.AddScoped<IValidator<LoanModelVM>, CreateLoanPayloadValidator>();
 builder.Services.AddScoped<IValidator<RepaymentModelVM>, RepaymentModelValidator>();
-builder.Services.AddDbContext<LoanDbContext>(options =>
-        options.UseSqlServer(builder.Configuration.GetConnectionString("AspireDBConnectionString")));
-
-// Setting up Policy for Admin users
+builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddAuthorization(options =>
 {
-    options.AddPolicy("LoanManager", policy =>
+    options.AddPolicy("LoanManagerPolicy", policy =>
+        policy.RequireClaim(ClaimTypes.Role, "LoanManager"));
+    options.AddPolicy("LoanCustomerPolicy", policy =>
+        policy.RequireClaim(ClaimTypes.Role, "LoanCustomer"));
+});
+
+builder.Services.AddDbContext<LoanDbContext>(options =>
+        options.UseSqlServer(builder.Configuration.GetConnectionString("AspireDBConnectionString")));
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+}).AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
     {
-        policy.RequireRole("LoanManager");
-    });
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("your-secret-key")),
+        ValidIssuer = "your-issuer",
+        ValidAudience = "your-audience"
+    };
 });
 
 var app = builder.Build();

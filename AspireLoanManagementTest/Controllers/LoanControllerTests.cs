@@ -1,10 +1,10 @@
 ﻿using AspireLoanManagement.Business.Models;
-using AspireLoanManagement.Business;
 using AutoFixture;
 using FluentValidation;
 using Moq;
 using AspireLoanManagement.Controllers;
 using FluentAssertions;
+using AspireLoanManagement.Business.Loan;
 
 namespace AspireLoanManagementTest.Controllers
 {

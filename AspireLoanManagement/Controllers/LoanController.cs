@@ -1,4 +1,4 @@
-﻿using AspireLoanManagement.Business;
+﻿using AspireLoanManagement.Business.Loan;
 using AspireLoanManagement.Business.Models;
 using AspireLoanManagement.Utility.CommonEntities;
 using AspireLoanManagement.Utility.Validators;
@@ -15,6 +15,7 @@ namespace AspireLoanManagement.Controllers
             _loanService = service;
         }
 
+        [Authorize(Policy = "LoanCustomerPolicy")]
         [HttpGet]
         [Route("api/Loan/GetLoanById/{Id}")]
         public async Task<LoanModelVM> GetLoanByID(int Id)
@@ -27,6 +28,7 @@ namespace AspireLoanManagement.Controllers
             return await _loanService.GetLoanByIdAsync(Id);
         }
 
+        [Authorize(Policy = "LoanCustomerPolicy")]
         [HttpPost]
         [Route("api/Loan/CreateLoan")]
         public async Task<LoanModelVM> CreateLoan([FromBody] LoanModelVM loan)
@@ -41,7 +43,7 @@ namespace AspireLoanManagement.Controllers
             return await _loanService.AddLoanAsync(loan);
         }
 
-        [Authorize(Roles = "LoanManager")]
+        [Authorize(Policy = "LoanManagerPolicy")]
         [HttpPut]
         [Route("api/Loan/ApproveLoan/{Id}")]
         public async Task<LoanStatus> ApproveLoan(int Id)

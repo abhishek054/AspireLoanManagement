@@ -2,7 +2,7 @@
 using AspireLoanManagement.Repository;
 using AspireLoanManagement.Utility.CommonEntities;
 
-namespace AspireLoanManagement.Business
+namespace AspireLoanManagement.Business.Loan
 {
     public interface ILoanService
     {

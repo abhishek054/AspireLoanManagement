@@ -1,7 +1,8 @@
 ﻿using AspireLoanManagement.Business.Models;
-using AspireLoanManagement.Business;
 using AspireLoanManagement.Utility.Validators;
 using Microsoft.AspNetCore.Mvc;
+using AspireLoanManagement.Business.Loan;
+using Microsoft.AspNetCore.Authorization;
 
 namespace AspireLoanManagement.Controllers
 {
@@ -13,6 +14,7 @@ namespace AspireLoanManagement.Controllers
             _loanService = service;
         }
 
+        [Authorize(Policy = "LoanCustomerPolicy")]
         [HttpPost]
         [Route("api/Loan/SettleRepayment")]
         public async Task<bool> SettleRepayment([FromBody] RepaymentModelVM repayment)
