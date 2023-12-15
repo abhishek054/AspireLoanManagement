@@ -37,7 +37,8 @@ namespace AspireLoanManagement.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     UserId = table.Column<int>(type: "int", nullable: false),
                     LoanID = table.Column<int>(type: "int", nullable: false),
-                    RepaymentAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    PendingAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    PaidAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     ExpectedRepaymentDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     ActualRepaymentDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     Status = table.Column<int>(type: "int", nullable: false)

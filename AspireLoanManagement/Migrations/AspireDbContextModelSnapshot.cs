@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AspireLoanManagement.Migrations
 {
     [DbContext(typeof(AspireDbContext))]
-    partial class LoanDbContextModelSnapshot : ModelSnapshot
+    partial class AspireDbContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)
         {

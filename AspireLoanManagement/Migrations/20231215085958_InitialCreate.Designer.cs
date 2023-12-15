@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AspireLoanManagement.Migrations
 {
     [DbContext(typeof(AspireDbContext))]
-    [Migration("20231214090318_UpdateRepaymentModel")]
-    partial class UpdateRepaymentModel
+    [Migration("20231215085958_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
