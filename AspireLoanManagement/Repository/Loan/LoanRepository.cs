@@ -26,12 +26,6 @@ namespace AspireLoanManagement.Repository.Loan
             return loanDto;
         }
 
-        public async Task AddMultipleRepaymentAsync(List<RepaymentModelVM> repayments)
-        {
-            var repaymentDto = _mapper.Map<List<RepaymentModelDTO>>(repayments);
-            _context.Repayments.AddRange(repaymentDto);
-            await _context.SaveChangesAsync();
-        }
 
         public async Task<LoanStatus> ApproveLoan(int loanID)
         {
@@ -57,33 +51,6 @@ namespace AspireLoanManagement.Repository.Loan
             }
             loanDto.Repayments = await _context.Repayments.Where(x => x.LoanID == loanId).ToListAsync();
             return loanDto;
-        }
-
-        public async Task SettleRepayment(int repaymentId)
-        {
-            var rep = await _context.Repayments.FirstOrDefaultAsync(x => x.Id == repaymentId);
-            if (rep == null)
-            {
-                throw new Exception($"No repayment available for repaymentID: {repaymentId}");
-            }
-            rep.ActualRepaymentDate = DateTime.UtcNow;
-            rep.Status = RepaymentStatus.Paid;
-            rep.PaidAmount += rep.PendingAmount;
-            rep.PendingAmount = 0;
-            _context.Repayments.Update(rep);
-            await _context.SaveChangesAsync();
-        }
-
-        public async Task UpdateRepaymentAmount(RepaymentModelDTO repayment)
-        {
-            var rep = await _context.Repayments.FirstOrDefaultAsync(x => x.Id == repayment.Id);
-            if (rep == null)
-            {
-                throw new Exception($"No repayment available for repaymentID: {repayment.Id}");
-            }
-            rep.PendingAmount = repayment.PendingAmount;
-            _context.Repayments.Update(rep);
-            await _context.SaveChangesAsync();
         }
 
         public async Task SettleLoan(int loanID)

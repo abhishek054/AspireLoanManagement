@@ -8,7 +8,6 @@ namespace AspireLoanManagement.Business.Loan
     {
         Task<LoanModelVM> GetLoanByIdAsync(int loanId);
         Task<LoanModelVM> AddLoanAsync(LoanModelVM loan);
-        Task<bool> SettleRepayment(RepaymentModelVM repayment);
         Task<LoanStatus> ApproveLoan(int loanId);
     }
 }

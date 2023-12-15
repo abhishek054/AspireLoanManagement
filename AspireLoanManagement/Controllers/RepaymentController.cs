@@ -3,15 +3,16 @@ using AspireLoanManagement.Utility.Validators;
 using Microsoft.AspNetCore.Mvc;
 using AspireLoanManagement.Business.Loan;
 using Microsoft.AspNetCore.Authorization;
+using AspireLoanManagement.Business.Repayment;
 
 namespace AspireLoanManagement.Controllers
 {
     public class RepaymentController : ControllerBase
     {
-        private readonly ILoanService _loanService;
-        public RepaymentController(ILoanService service)
+        private readonly IRepaymentService _repaymentService;
+        public RepaymentController(IRepaymentService repaymentService)
         {
-            _loanService = service;
+            _repaymentService = repaymentService;            
         }
 
         [Authorize(Policy = "LoanCustomerPolicy")]
@@ -26,7 +27,7 @@ namespace AspireLoanManagement.Controllers
                 throw new Exception("Error Occured");
             }
 
-            return await _loanService.SettleRepayment(repayment);
+            return await _repaymentService.SettleRepayment(repayment);
         }
 
     }

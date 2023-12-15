@@ -14,6 +14,8 @@ using AspireLoanManagement.Business.Loan;
 using AspireLoanManagement.Business.Authentication;
 using System.Security.Claims;
 using AspireLoanManagement.Repository.Loan;
+using AspireLoanManagement.Repository.Repayment;
+using AspireLoanManagement.Business.Repayment;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,7 +32,9 @@ builder.Services.AddAutoMapper(cfg =>
     cfg.AddProfile<MappingProfile>();
 });
 builder.Services.AddScoped<ILoanService, LoanService>();
+builder.Services.AddScoped<IRepaymentService, RepaymentService>();
 builder.Services.AddScoped<ILoanRepository, LoanRepository>();
+builder.Services.AddScoped<IRepaymentRepository, RepaymentRepository>();
 builder.Services.AddSingleton<IAspireCacheService, AspireCacheManager>();
 builder.Services.AddSingleton<IAspireLogger, AspireLoggerManager>();
 builder.Services.AddScoped<IValidator<LoanModelVM>, CreateLoanPayloadValidator>();
