@@ -1,13 +1,15 @@
-﻿namespace AspireLoanManagement.Utility.ExceptionHandling
+﻿using AspireLoanManagement.Utility.Logger;
+
+namespace AspireLoanManagement.Utility.ExceptionHandling
 {
     public class ExceptionHandlingMiddleware
     {
         private readonly RequestDelegate _next;
-        private readonly ILogger<ExceptionHandlingMiddleware> _logger;
+        private readonly IAspireLogger _logger;
 
         public ExceptionHandlingMiddleware(
             RequestDelegate next,
-            ILogger<ExceptionHandlingMiddleware> logger
+            IAspireLogger logger
             )
         {
             _next = next;
@@ -22,8 +24,8 @@
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
-                //Console.WriteLine(ex.StackTrace);
+                _logger.Log(LogLevel.Error, ex.Message);
+                // _logger.Log(LogLevel.Error, ex.StackTrace);
                 throw;
             }
         }

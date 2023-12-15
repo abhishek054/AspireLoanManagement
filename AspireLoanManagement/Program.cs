@@ -16,6 +16,7 @@ using System.Security.Claims;
 using AspireLoanManagement.Repository.Loan;
 using AspireLoanManagement.Repository.Repayment;
 using AspireLoanManagement.Business.Repayment;
+using AspireLoanManagement.Utility.ExceptionHandling;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -70,6 +71,7 @@ builder.Services.AddAuthentication(options =>
 
 var app = builder.Build();
 
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
