@@ -5,7 +5,6 @@ using FluentValidation;
 using Moq;
 using AspireLoanManagement.Controllers;
 using FluentAssertions;
-using System.ComponentModel.DataAnnotations;
 
 namespace AspireLoanManagementTest.Controllers
 {
@@ -14,7 +13,6 @@ namespace AspireLoanManagementTest.Controllers
         private readonly Fixture _fixture;
         private readonly Mock<ILoanService> _loanServiceMock;
         private readonly Mock<IValidator<LoanModelVM>> _loanValidatorMock;
-        private readonly Mock<IValidator<RepaymentModelVM>> _repaymentValidatorMock;
         private readonly LoanController _loanController;
 
         public LoanControllerTest()
@@ -22,7 +20,6 @@ namespace AspireLoanManagementTest.Controllers
             _fixture = new Fixture();
             _loanServiceMock = new Mock<ILoanService>();
             _loanValidatorMock = new Mock<IValidator<LoanModelVM>>();
-            _repaymentValidatorMock = new Mock<IValidator<RepaymentModelVM>>();
             _loanController = new LoanController(_loanServiceMock.Object);
         }
 

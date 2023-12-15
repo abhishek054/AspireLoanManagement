@@ -2,7 +2,6 @@
 using AspireLoanManagement.Business.Models;
 using AspireLoanManagement.Utility.CommonEntities;
 using AspireLoanManagement.Utility.Validators;
-using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -40,20 +39,6 @@ namespace AspireLoanManagement.Controllers
             }
 
             return await _loanService.AddLoanAsync(loan);
-        }
-
-        [HttpPost]
-        [Route("api/Loan/SettleRepayment")]
-        public async Task<bool> SettleRepayment([FromBody] RepaymentModelVM repayment)
-        {
-            var validator = new RepaymentModelValidator();
-            var valid = await validator.ValidateAsync(repayment);
-            if (!valid.IsValid)
-            {
-                throw new Exception("Error Occured");
-            }
-
-            return await _loanService.SettleRepayment(repayment);
         }
 
         [Authorize(Roles = "LoanManager")]
