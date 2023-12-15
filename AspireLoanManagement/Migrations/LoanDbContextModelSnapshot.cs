@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace AspireLoanManagement.Migrations
 {
-    [DbContext(typeof(LoanDbContext))]
+    [DbContext(typeof(AspireDbContext))]
     partial class LoanDbContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)

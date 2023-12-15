@@ -4,9 +4,9 @@ using System.Reflection.Emit;
 
 namespace AspireLoanManagement.Repository
 {
-    public class LoanDbContext : DbContext
+    public class AspireDbContext : DbContext
     {
-        public LoanDbContext(DbContextOptions<LoanDbContext> options) : base(options)
+        public AspireDbContext(DbContextOptions<AspireDbContext> options) : base(options)
         {
         }
 

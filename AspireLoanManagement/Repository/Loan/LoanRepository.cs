@@ -1,17 +1,16 @@
-﻿
-using AspireLoanManagement.Business.Models;
+﻿using AspireLoanManagement.Business.Models;
 using AspireLoanManagement.Utility.CommonEntities;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 
-namespace AspireLoanManagement.Repository
+namespace AspireLoanManagement.Repository.Loan
 {
     public class LoanRepository : ILoanRepository
     {
-        private readonly LoanDbContext _context;
+        private readonly AspireDbContext _context;
         private readonly IMapper _mapper;
 
-        public LoanRepository(LoanDbContext context, IMapper mapper)
+        public LoanRepository(AspireDbContext context, IMapper mapper)
         {
             _context = context;
             _mapper = mapper;
@@ -56,14 +55,14 @@ namespace AspireLoanManagement.Repository
             {
                 throw new InvalidDataException($"No oan available with ID: {loanId}");
             }
-            loanDto.Repayments = await _context.Repayments.Where(x => x.LoanID ==  loanId).ToListAsync();
+            loanDto.Repayments = await _context.Repayments.Where(x => x.LoanID == loanId).ToListAsync();
             return loanDto;
         }
 
         public async Task SettleRepayment(int repaymentId)
         {
             var rep = await _context.Repayments.FirstOrDefaultAsync(x => x.Id == repaymentId);
-            if(rep == null)
+            if (rep == null)
             {
                 throw new Exception($"No repayment available for repaymentID: {repaymentId}");
             }
@@ -89,12 +88,12 @@ namespace AspireLoanManagement.Repository
 
         public async Task SettleLoan(int loanID)
         {
-            var loan = await _context.Loans.FirstOrDefaultAsync(x => x.Id == loanID && x.Status != Utility.CommonEntities.LoanStatus.Paid);
-            if(loan == null)
+            var loan = await _context.Loans.FirstOrDefaultAsync(x => x.Id == loanID && x.Status != LoanStatus.Paid);
+            if (loan == null)
             {
                 throw new Exception($"No active loan found with id: {loanID}");
             }
-            loan.Status = Utility.CommonEntities.LoanStatus.Paid;
+            loan.Status = LoanStatus.Paid;
             loan.SettledDate = DateTime.UtcNow;
             _context.Loans.Update(loan);
             await _context.SaveChangesAsync();

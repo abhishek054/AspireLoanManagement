@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace AspireLoanManagement.Migrations
 {
-    [DbContext(typeof(LoanDbContext))]
+    [DbContext(typeof(AspireDbContext))]
     [Migration("20231214063330_InitialCreate")]
     partial class InitialCreate
     {

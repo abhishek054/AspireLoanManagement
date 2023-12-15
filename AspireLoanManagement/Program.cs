@@ -13,6 +13,7 @@ using System.Text;
 using AspireLoanManagement.Business.Loan;
 using AspireLoanManagement.Business.Authentication;
 using System.Security.Claims;
+using AspireLoanManagement.Repository.Loan;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -43,7 +44,7 @@ builder.Services.AddAuthorization(options =>
         policy.RequireClaim(ClaimTypes.Role, "LoanCustomer"));
 });
 
-builder.Services.AddDbContext<LoanDbContext>(options =>
+builder.Services.AddDbContext<AspireDbContext>(options =>
         options.UseSqlServer(builder.Configuration.GetConnectionString("AspireDBConnectionString")));
 builder.Services.AddAuthentication(options =>
 {

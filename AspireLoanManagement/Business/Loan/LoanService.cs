@@ -1,5 +1,5 @@
 ﻿using AspireLoanManagement.Business.Models;
-using AspireLoanManagement.Repository;
+using AspireLoanManagement.Repository.Loan;
 using AspireLoanManagement.Utility.Cache;
 using AspireLoanManagement.Utility.CommonEntities;
 using AspireLoanManagement.Utility.Logger;
