@@ -2,6 +2,7 @@
 using AspireLoanManagement.Business.Models;
 using AspireLoanManagement.Repository;
 using AspireLoanManagement.Repository.Loan;
+using AspireLoanManagement.Repository.Repayment;
 using AspireLoanManagement.Utility.Cache;
 using AspireLoanManagement.Utility.CommonEntities;
 using AspireLoanManagement.Utility.Logger;
@@ -16,6 +17,7 @@ namespace AspireLoanManagementTest.Business
     {
         private readonly Fixture _fixture;
         private readonly Mock<ILoanRepository> _loanRepositoryMock;
+        private readonly Mock<IRepaymentRepository> _repaymentRepositoryMock;
         private readonly Mock<IMapper> _mapperMock;
         private readonly Mock<IAspireLogger> _loggerMock;
         private readonly Mock<IAspireCacheService> _cacheMock;
@@ -25,10 +27,11 @@ namespace AspireLoanManagementTest.Business
         {
             _fixture = new Fixture();
             _loanRepositoryMock = new Mock<ILoanRepository>();
+            _repaymentRepositoryMock = new Mock<IRepaymentRepository>();
             _mapperMock = new Mock<IMapper>();
             _loggerMock = new Mock<IAspireLogger>();
             _cacheMock = new Mock<IAspireCacheService>();
-            _loanService = new LoanService(_loanRepositoryMock.Object, _mapperMock.Object, _loggerMock.Object, _cacheMock.Object);
+            _loanService = new LoanService(_loanRepositoryMock.Object, _repaymentRepositoryMock.Object, _mapperMock.Object, _loggerMock.Object, _cacheMock.Object);
         }
 
         [Fact]
@@ -52,35 +55,7 @@ namespace AspireLoanManagementTest.Business
             _mapperMock.Verify();
         }
 
-        [Fact]
-        public async Task SettleRepayment_WithValidRepayment_ShouldSettleRepayment()
-        {
-            // Arrange
-            var repaymentModel = _fixture.Create<RepaymentModelVM>();
-            var loan = _fixture.Build<LoanModelDTO>()
-                .With(x => x.Repayments, new List<RepaymentModelDTO>() { })
-                .With(x => x.UserId, repaymentModel.UserId)
-                .With(x => x.Id, repaymentModel.LoanID)
-                .With(x => x.Status, LoanStatus.Approved)
-                .With(x => x.Repayments, _fixture.Build<RepaymentModelDTO>()
-                    .With(x => x.LoanID, repaymentModel.LoanID)
-                    .Without(x => x.LoanModelDTO)
-                    .With(x => x.PendingAmount, repaymentModel.RepaymentAmount)
-                    .CreateMany(3).ToList())
-                .Create();
 
-
-            _loanRepositoryMock.Setup(x => x.GetLoanByIdAsync(repaymentModel.LoanID)).ReturnsAsync(loan);
-            _loanRepositoryMock.Setup(x => x.SettleRepayment(It.IsAny<int>())).Returns(Task.CompletedTask);
-
-            // Act
-            var result = await _loanService.SettleRepayment(repaymentModel);
-
-            // Assert
-            result.Should().BeTrue();
-            _loanRepositoryMock.Verify(x => x.GetLoanByIdAsync(repaymentModel.LoanID));
-            _loanRepositoryMock.Verify(x => x.SettleRepayment(It.IsAny<int>()));
-        }
 
         [Fact]
         public async Task ApproveLoan_WithValidLoanId_ShouldReturnLoanStatus()

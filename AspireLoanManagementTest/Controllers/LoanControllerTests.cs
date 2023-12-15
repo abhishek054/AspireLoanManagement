@@ -5,6 +5,8 @@ using Moq;
 using AspireLoanManagement.Controllers;
 using FluentAssertions;
 using AspireLoanManagement.Business.Loan;
+using AspireLoanManagement.Business.Repayment;
+using AspireLoanManagement.Utility.CommonEntities;
 
 namespace AspireLoanManagementTest.Controllers
 {
@@ -12,6 +14,7 @@ namespace AspireLoanManagementTest.Controllers
     {
         private readonly Fixture _fixture;
         private readonly Mock<ILoanService> _loanServiceMock;
+        private readonly Mock<IRepaymentService> _repaymentServiceMock;
         private readonly Mock<IValidator<LoanModelVM>> _loanValidatorMock;
         private readonly LoanController _loanController;
 
@@ -19,6 +22,7 @@ namespace AspireLoanManagementTest.Controllers
         {
             _fixture = new Fixture();
             _loanServiceMock = new Mock<ILoanService>();
+            _repaymentServiceMock = new Mock<IRepaymentService>();
             _loanValidatorMock = new Mock<IValidator<LoanModelVM>>();
             _loanController = new LoanController(_loanServiceMock.Object);
         }
@@ -68,6 +72,22 @@ namespace AspireLoanManagementTest.Controllers
             exception.Message.Should().Be("Error Occured");
             _loanValidatorMock.Verify();
             _loanServiceMock.Verify();
+        }
+
+        [Fact]
+        public async Task ApproveLoan_ValidId_Success()
+        {
+            // Arrange
+            var id = _fixture.Create<int>();
+            _loanServiceMock.Setup(x => x.ApproveLoan(It.IsAny<int>())).ReturnsAsync(LoanStatus.Approved);
+
+            // Act
+            var result = await _loanController.ApproveLoan(id);
+
+            // Assert
+            result.Should().Be(LoanStatus.Approved);
+            _loanServiceMock.Verify();
+
         }
     }
 }
