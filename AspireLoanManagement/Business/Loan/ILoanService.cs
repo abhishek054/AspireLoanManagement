@@ -9,5 +9,6 @@ namespace AspireLoanManagement.Business.Loan
         Task<LoanModelVM> GetLoanByIdAsync(int loanId);
         Task<LoanModelVM> AddLoanAsync(LoanModelVM loan);
         Task<LoanStatus> ApproveLoan(int loanId);
+        Task<bool> IsLoanOwnedByUser(int userName, int loanId);
     }
 }

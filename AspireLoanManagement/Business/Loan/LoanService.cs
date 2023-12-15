@@ -79,5 +79,14 @@ namespace AspireLoanManagement.Business.Loan
 
         }
 
+        public async Task<bool> IsLoanOwnedByUser(int userId, int loanId)
+        {
+            var loan = await _loanRepository.GetLoanByIdAsync(loanId);
+            if (loan != null)
+            {
+                return loan.UserId == userId;
+            }
+            return false;
+        }
     }
 }

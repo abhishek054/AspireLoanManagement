@@ -1,5 +1,6 @@
 ﻿using AspireLoanManagement.Business.Loan;
 using AspireLoanManagement.Business.Models;
+using AspireLoanManagement.Utility.Attributes;
 using AspireLoanManagement.Utility.CommonEntities;
 using AspireLoanManagement.Utility.Validators;
 using Microsoft.AspNetCore.Authorization;
@@ -16,6 +17,7 @@ namespace AspireLoanManagement.Controllers
         }
 
         [Authorize(Policy = "LoanCustomerPolicy")]
+        [LoanToUserMapping]
         [HttpGet]
         [Route("api/Loan/GetLoanById/{Id}")]
         public async Task<LoanModelVM> GetLoanByID(int Id)
@@ -25,7 +27,18 @@ namespace AspireLoanManagement.Controllers
             {
                 throw new Exception("Invalid payload");
             }
-            return await _loanService.GetLoanByIdAsync(Id);
+
+            if (HttpContext.Items.TryGetValue("userId", out var userId))
+            {
+                if (!await _loanService.IsLoanOwnedByUser(Convert.ToInt32(userId), Id))
+                {
+                    throw new InvalidOperationException("Loan do not belong to this user");
+                }
+
+                return await _loanService.GetLoanByIdAsync(Id);
+            }
+
+            throw new Exception("User information missing from request context");
         }
 
         [Authorize(Policy = "LoanCustomerPolicy")]
@@ -35,7 +48,7 @@ namespace AspireLoanManagement.Controllers
         {
             var validator = new CreateLoanPayloadValidator();
             var valid = await validator.ValidateAsync(loan);
-            if(!valid.IsValid)
+            if (!valid.IsValid)
             {
                 throw new Exception("Error Occured");
             }
@@ -48,7 +61,7 @@ namespace AspireLoanManagement.Controllers
         [Route("api/Loan/ApproveLoan/{Id}")]
         public async Task<LoanStatus> ApproveLoan(int Id)
         {
-            if(!ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
                 throw new Exception("Unauthorized user");
             }
