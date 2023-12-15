@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace AspireLoanManagement.Controllers
 {
+    [ApiController]
+    [ApiVersion("1")]
     public class LoanController : ControllerBase
     {
         private readonly ILoanService _loanService;
@@ -19,23 +21,23 @@ namespace AspireLoanManagement.Controllers
         [Authorize(Policy = "LoanCustomerPolicy")]
         [LoanToUserMapping]
         [HttpGet]
-        [Route("api/Loan/GetLoanById/{Id}")]
-        public async Task<LoanModelVM> GetLoanByID(int Id)
+        [Route("api/v{version:apiVersion}/[controller]/GetLoanById/{loanId}")]
+        public async Task<LoanModelVM> GetLoanByID(int loanId)
         {
             var validator = new GetLoanPayloadValidator();
-            if (!validator.Validate(Id).IsValid)
+            if (!validator.Validate(loanId).IsValid)
             {
                 throw new Exception("Invalid payload");
             }
 
             if (HttpContext.Items.TryGetValue("userId", out var userId))
             {
-                if (!await _loanService.IsLoanOwnedByUser(Convert.ToInt32(userId), Id))
+                if (!await _loanService.IsLoanOwnedByUser(Convert.ToInt32(userId), loanId))
                 {
                     throw new InvalidOperationException("Loan do not belong to this user");
                 }
 
-                return await _loanService.GetLoanByIdAsync(Id);
+                return await _loanService.GetLoanByIdAsync(loanId);
             }
 
             throw new Exception("User information missing from request context");
@@ -43,7 +45,7 @@ namespace AspireLoanManagement.Controllers
 
         [Authorize(Policy = "LoanCustomerPolicy")]
         [HttpPost]
-        [Route("api/Loan/CreateLoan")]
+        [Route("api/v{version:apiVersion}/[controller]/CreateLoan")]
         public async Task<LoanModelVM> CreateLoan([FromBody] LoanModelVM loan)
         {
             var validator = new CreateLoanPayloadValidator();
@@ -58,14 +60,14 @@ namespace AspireLoanManagement.Controllers
 
         [Authorize(Policy = "LoanManagerPolicy")]
         [HttpPut]
-        [Route("api/Loan/ApproveLoan/{Id}")]
-        public async Task<LoanStatus> ApproveLoan(int Id)
+        [Route("api/v{version:apiVersion}/[controller]/ApproveLoan/{loanId}")]
+        public async Task<LoanStatus> ApproveLoan(int loanId)
         {
             if (!ModelState.IsValid)
             {
                 throw new Exception("Unauthorized user");
             }
-            return await _loanService.ApproveLoan(Id);
+            return await _loanService.ApproveLoan(loanId);
         }
 
     }

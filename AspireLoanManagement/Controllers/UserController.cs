@@ -5,6 +5,8 @@ using System.Security.Claims;
 
 namespace AspireLoanManagement.Controllers
 {
+    [ApiController]
+    [ApiVersion("1")]
     public class UserController : ControllerBase
     {
         private readonly IAuthService _authService;
@@ -14,6 +16,7 @@ namespace AspireLoanManagement.Controllers
         }
 
         [HttpPost]
+        [Route("api/v{version:apiVersion}/[controller]/Login")]
         public IActionResult Login([FromBody]AspireUser loginUser)
         {
             // Authenticate user using username and password

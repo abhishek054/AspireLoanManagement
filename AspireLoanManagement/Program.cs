@@ -17,6 +17,7 @@ using AspireLoanManagement.Repository.Loan;
 using AspireLoanManagement.Repository.Repayment;
 using AspireLoanManagement.Business.Repayment;
 using AspireLoanManagement.Utility.ExceptionHandling;
+using Microsoft.AspNetCore.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -47,6 +48,13 @@ builder.Services.AddAuthorization(options =>
         policy.RequireClaim(ClaimTypes.Role, "LoanManager"));
     options.AddPolicy("LoanCustomerPolicy", policy =>
         policy.RequireClaim(ClaimTypes.Role, "LoanCustomer"));
+});
+
+builder.Services.AddApiVersioning(config =>
+{
+    config.DefaultApiVersion = new ApiVersion(1, 0);
+    config.ReportApiVersions = true;
+    config.AssumeDefaultVersionWhenUnspecified = true;
 });
 
 builder.Services.AddDbContext<AspireDbContext>(options =>

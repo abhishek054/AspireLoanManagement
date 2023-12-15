@@ -7,6 +7,8 @@ using AspireLoanManagement.Business.Repayment;
 
 namespace AspireLoanManagement.Controllers
 {
+    [ApiController]
+    [ApiVersion("1")]
     public class RepaymentController : ControllerBase
     {
         private readonly IRepaymentService _repaymentService;
@@ -17,7 +19,7 @@ namespace AspireLoanManagement.Controllers
 
         [Authorize(Policy = "LoanCustomerPolicy")]
         [HttpPost]
-        [Route("api/Loan/SettleRepayment")]
+        [Route("api/v{version:apiVersion}/[controller]/SettleRepayment")]
         public async Task<bool> SettleRepayment([FromBody] RepaymentModelVM repayment)
         {
             var validator = new RepaymentModelValidator();
