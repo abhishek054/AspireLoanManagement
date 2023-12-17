@@ -76,6 +76,13 @@ builder.Services.AddAuthentication(options =>
         ValidAudience = "audience from config"
     };
 });
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll",
+        builder => builder.AllowAnyOrigin()
+                          .AllowAnyMethod()
+                          .AllowAnyHeader());
+});
 
 var app = builder.Build();
 
@@ -90,6 +97,8 @@ if (app.Environment.IsDevelopment())
         c.SwaggerEndpoint("/swagger/v1/swagger.json", "Aspire Loan Management API v1");
     });
 }
+
+app.UseCors("AllowAll");
 
 app.UseHttpsRedirection();
 

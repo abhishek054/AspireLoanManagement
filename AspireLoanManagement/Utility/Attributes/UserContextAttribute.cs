@@ -4,9 +4,9 @@ using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace AspireLoanManagement.Utility.Attributes
 {
-    public class LoanToUserMappingAttribute : Attribute, IAuthorizationFilter
+    public class UserContextAttribute : Attribute, IAuthorizationFilter
     {
-        public LoanToUserMappingAttribute()
+        public UserContextAttribute()
         {
         }
         public void OnAuthorization(AuthorizationFilterContext context)

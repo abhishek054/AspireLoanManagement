@@ -19,7 +19,7 @@ namespace AspireLoanManagement.Controllers
         }
 
         [Authorize(Policy = "LoanCustomerPolicy")]
-        [LoanToUserMapping]
+        [UserContext]
         [HttpGet]
         [Route("api/v{version:apiVersion}/[controller]/GetLoanById/{loanId}")]
         public async Task<LoanModelVM> GetLoanByID(int loanId)
